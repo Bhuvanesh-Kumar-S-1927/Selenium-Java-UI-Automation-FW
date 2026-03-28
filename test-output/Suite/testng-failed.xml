@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Failed suite [Suite]">
+  <listeners>
+    <listener class-name="com.bhuvi.listener.ListenerClass"/>
+    <listener class-name="com.bhuvi.listener.MethodInterceptor"/>
+    <listener class-name="com.bhuvi.listener.AnnotationTransformer"/>
+  </listeners>
+  <test thread-count="5" parallel="methods" name="Test(failed)">
+    <classes>
+      <class name="com.bhuvi.tests.PracticeTestAutomationTests">
+        <methods>
+          <include name="setUp"/>
+          <include name="tearDown"/>
+          <include name="loginTest" invocation-numbers="1"/>
+        </methods>
+      </class> <!-- com.bhuvi.tests.PracticeTestAutomationTests -->
+    </classes>
+  </test> <!-- Test(failed) -->
+</suite> <!-- Failed suite [Suite] -->

@@ -1,0 +1,14 @@
+<suite name="Suite">
+    <listeners>
+        <listener class-name="com.bhuvi.listener.ListenerClass" />
+        <listener class-name="com.bhuvi.listener.MethodInterceptor"/>
+        <listener class-name="com.bhuvi.listener.AnnotationTransformer"/>
+    </listeners>
+
+    <test name="Test" parallel="methods" thread-count="3">
+        <classes>
+            <class name="com.bhuvi.tests.PracticeTestAutomationTests" />
+            <class name="com.bhuvi.tests.AmazonDemoTest" />
+        </classes>
+    </test>
+</suite>
