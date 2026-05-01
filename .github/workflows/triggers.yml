@@ -51,19 +51,16 @@ jobs:
           -Denvironment=${{ github.event.inputs.environment }} \
           -Dheadless=true
 
-      # 8️⃣ Generate Allure Report
-      - name: Generate Allure Report
-        run: mvn io.qameta.allure:allure-maven:report
-
-      # 9️⃣ Upload Reports
+      # 8️⃣ Upload Reports
       - name: Upload Test Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: selenium-test-results
           path: |
             target/surefire-reports/
-            target/allure-results/
-            target/site/allure-maven-plugin/
+            test-output/
+            extent-test-output/
+            index.html
 
       # 🔟 Always execute
       - name: Completion Step
