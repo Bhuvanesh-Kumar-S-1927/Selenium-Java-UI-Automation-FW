@@ -38,8 +38,10 @@ public final class ExtentReport {
 		}
 		ExtentManager.unload();
 		try {
-			Desktop.getDesktop().browse(new File(FrameworkConstants.getExtentReportFilePath()).toURI());
-		} catch (IOException e) {
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+				Desktop.getDesktop().browse(new File(FrameworkConstants.getExtentReportFilePath()).toURI());
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
