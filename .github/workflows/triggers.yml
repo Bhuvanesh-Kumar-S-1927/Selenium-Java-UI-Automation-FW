@@ -2,29 +2,28 @@ name: Run Selenium Tests
 
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Select Environment (qa/stage/prod)'
-        required: true
-        default: 'qa'
 
 jobs:
   run-tests:
     runs-on: ubuntu-latest
 
+    # 🔥 Force Node.js 24 (future-proof)
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
       # 1️⃣ Checkout Code
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # 2️⃣ Setup Java
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # 3️⃣ Cache Maven Dependencies (faster builds)
+      # 3️⃣ Cache Maven Dependencies
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
@@ -33,19 +32,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2
 
-      # 4️⃣ Install Chrome Browser
+      # 4️⃣ Install Chrome
       - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
 
-      # 5️⃣ Verify Chrome Installation
+      # 5️⃣ Verify Chrome
       - name: Check Chrome Version
         run: google-chrome --version
 
-      # 6️⃣ Install Project Dependencies
+      # 6️⃣ Install Dependencies
       - name: Install Dependencies
         run: mvn clean install -DskipTests
 
-      # 7️⃣ Run Selenium Tests (Headless)
+      # 7️⃣ Run Tests
       - name: Run Tests
         run: |
           mvn test \
@@ -54,10 +53,9 @@ jobs:
 
       # 8️⃣ Generate Allure Report
       - name: Generate Allure Report
-        run: |
-          mvn io.qameta.allure:allure-maven:report
+        run: mvn io.qameta.allure:allure-maven:report
 
-      # 9️⃣ Upload Test Results (Allure + Surefire)
+      # 9️⃣ Upload Reports
       - name: Upload Test Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -67,7 +65,7 @@ jobs:
             target/allure-results/
             target/site/allure-maven-plugin/
 
-      # 🔟 (Optional) Always run this step even if tests fail
-      - name: Mark Job Complete
+      # 🔟 Always execute
+      - name: Completion Step
         if: always()
         run: echo "Execution Completed"
