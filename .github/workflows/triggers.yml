@@ -47,7 +47,7 @@ jobs:
       # 7️⃣ Run Tests
       - name: Run Tests
         run: |
-          mvn test \
+          xvfb-run mvn test \
           -Denvironment=${{ github.event.inputs.environment }} \
           -Dheadless=true
 
