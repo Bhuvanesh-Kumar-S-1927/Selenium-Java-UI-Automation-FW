@@ -28,32 +28,44 @@ public final class DriverFactory {
 
 		if (browser.equalsIgnoreCase("chrome")) {
 
+			ChromeOptions options = new ChromeOptions();
+			if (Boolean.parseBoolean(System.getProperty("headless"))) {
+				options.addArguments("--headless=new");
+			}
+
 			if (runmode.equalsIgnoreCase("remote")) {
-				ChromeOptions options = new ChromeOptions();
 				driver = new RemoteWebDriver(new URL("http://localhost:4444"), options);
 			} else {
 				WebDriverManager.chromedriver().setup();
-				driver = new ChromeDriver();
+				driver = new ChromeDriver(options);
 			}
 
 		} else if (browser.equalsIgnoreCase("firefox")) {
 
+			FirefoxOptions options = new FirefoxOptions();
+			if (Boolean.parseBoolean(System.getProperty("headless"))) {
+				options.addArguments("--headless");
+			}
+
 			if (runmode.equalsIgnoreCase("remote")) {
-				FirefoxOptions options = new FirefoxOptions();
 				driver = new RemoteWebDriver(new URL("http://localhost:4444"), options);
 			} else {
 				WebDriverManager.firefoxdriver().setup();
-				driver = new FirefoxDriver();
+				driver = new FirefoxDriver(options);
 			}
 
 		} else if (browser.equalsIgnoreCase("edge")) {
 
+			EdgeOptions options = new EdgeOptions();
+			if (Boolean.parseBoolean(System.getProperty("headless"))) {
+				options.addArguments("--headless=new");
+			}
+
 			if (runmode.equalsIgnoreCase("remote")) {
-				EdgeOptions options = new EdgeOptions();
 				driver = new RemoteWebDriver(new URL("http://localhost:4444"), options);
 			} else {
 				WebDriverManager.edgedriver().setup();
-				driver = new EdgeDriver();
+				driver = new EdgeDriver(options);
 			}
 		}
 
