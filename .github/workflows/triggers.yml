@@ -1,24 +1,73 @@
 name: Run Selenium Tests
 
 on:
-  workflow_dispatch:   # 🔥 THIS enables manual trigger
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select Environment (qa/stage/prod)'
+        required: true
+        default: 'qa'
 
 jobs:
   run-tests:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 2️⃣ Setup Java
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
+      # 3️⃣ Cache Maven Dependencies (faster builds)
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2
+
+      # 4️⃣ Install Chrome Browser
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      # 5️⃣ Verify Chrome Installation
+      - name: Check Chrome Version
+        run: google-chrome --version
+
+      # 6️⃣ Install Project Dependencies
       - name: Install Dependencies
         run: mvn clean install -DskipTests
 
+      # 7️⃣ Run Selenium Tests (Headless)
       - name: Run Tests
-        run: mvn test
+        run: |
+          mvn test \
+          -Denvironment=${{ github.event.inputs.environment }} \
+          -Dheadless=true
+
+      # 8️⃣ Generate Allure Report
+      - name: Generate Allure Report
+        run: |
+          mvn io.qameta.allure:allure-maven:report
+
+      # 9️⃣ Upload Test Results (Allure + Surefire)
+      - name: Upload Test Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-test-results
+          path: |
+            target/surefire-reports/
+            target/allure-results/
+            target/site/allure-maven-plugin/
+
+      # 🔟 (Optional) Always run this step even if tests fail
+      - name: Mark Job Complete
+        if: always()
+        run: echo "Execution Completed"
