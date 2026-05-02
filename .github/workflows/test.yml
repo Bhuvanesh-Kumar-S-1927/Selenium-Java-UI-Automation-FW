@@ -1,0 +1,63 @@
+name: Run Automated Tests
+
+on:
+  repository_dispatch:
+    types: [run-tests]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    # Force Node.js 24 (future-proof) like your existing workflow
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      # 1️⃣ Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Java
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3️⃣ Cache Maven Dependencies
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2
+
+      # 4️⃣ Install Chrome
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      # 5️⃣ Verify Chrome
+      - name: Check Chrome Version
+        run: google-chrome --version
+
+      # 6️⃣ Run Tests
+      - name: Run Tests
+        run: |
+          xvfb-run mvn clean test -Dheadless=true
+
+      # 7️⃣ Upload Reports
+      - name: Upload Test Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-test-results
+          path: |
+            target/surefire-reports/
+            test-output/
+            extent-test-output/
+            index.html
+
+      # 8️⃣ Always execute
+      - name: Completion Step
+        if: always()
+        run: echo "Execution Completed"
